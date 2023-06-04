@@ -13,6 +13,13 @@ $discord->on('ready', function(Discord $discord) {
         $content = $message->content;
         if(strpos($content, '!') === false) return;
 
+        //Help responder
+        if($content === '!help') {
+            $help = "!jemoeder - Niet fucken met m'n moeder, ik reageer met: JOUW MOEDER
+!mop - Ik vertel een mop, als ik daar zin in heb";
+            $message->reply($help);
+        }
+
         //Jemoeder responder
         if($content === '!jemoeder') {
             $jemoeder = "JOUW MOEDER";
