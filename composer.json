@@ -3,7 +3,8 @@
         "team-reflex/discord-php": "^7.3",
         "guzzlehttp/guzzle": "^7.7",
         "vlucas/phpdotenv": "^5.5",
-        "php-http/curl-client": "^2.3"
+        "php-http/curl-client": "^2.3",
+      "ext-curl": "*"
     },
     "config": {
         "allow-plugins": {

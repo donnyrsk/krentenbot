@@ -3,7 +3,12 @@ require_once('./vendor/autoload.php');
 require_once('./.env');
 require __DIR__ . '/vendor/autoload.php';
 
+use Discord\Builders\MessageBuilder;
 use Discord\Discord;
+use Discord\Exceptions\IntentException;
+use Discord\Parts\Interactions\Command\Command;
+use Discord\Parts\Interactions\Interaction;
+use Discord\Builders\CommandBuilder;
 use Discord\WebSockets\Event;
 use Discord\WebSockets\Intents;
 use Dotenv\Dotenv;
@@ -21,10 +26,22 @@ try {
     exit(1);
 }
 
-$discord->on('ready', function($discord) {
+$discord->on('ready', function(Discord $discord) {
     echo 'Bot staat aan!', PHP_EOL;
 
+    $command = new Command($discord, ['name' => 'ping', 'description' => 'pong']);
+    $discord->application->commands->save($command);
 
+    $discord->application->commands->save(
+        $discord->application->commands->create(CommandBuilder::new()
+            ->setName('ping')
+            ->setDescription('pong')
+            ->toArray()
+        )
+    );
+    $discord->listenCommand('ping', function (Interaction $interaction) {
+       $interaction->respondWithMessage(MessageBuilder::new()->setContent('Pong!'));
+    });
     //Luistert naar berichten
     $discord->on('message', function($message, Discord $discord){
         $content = $message->content;
@@ -32,8 +49,7 @@ $discord->on('ready', function($discord) {
 
         //Help responder
         if($content === '!help') {
-            $help = "!jemoeder - Niet fucken met m'n moeder, ik reageer met: JOUW MOEDER
-!mop - Ik vertel een mop, als ik daar zin in heb";
+            $help = "!jemoeder, !mop, !sps (steen, papier of schaar)";
             $message->reply($help);
         }
 
@@ -50,6 +66,10 @@ $discord->on('ready', function($discord) {
             "Sorry, geen zin in.",
             "Val je moeder lekker lastig ofzo",
             "Ga buiten spelen alsjeblieft",
+            "Ik ken helemaal geen mop, stop met vragen",
+            "Wil je een krentenbol?",
+            "Deze week zijn de krentenbollen in de bonus bij de appie, wist je dat? Nee grapje, ik wil gewoon dat je opflikkerd",
+            "Sterf ff lekker af joh bloedzuiger"
         ];
         if($content === '!mop') {
             $randomMopArrayNumber = array_rand($moppen);
@@ -104,6 +124,11 @@ $discord->on('ready', function($discord) {
         }
         if($content === '!sps') {
             $message->reply('Kies dan iets, lege vaas');
+        }
+
+        //krentenbol responder
+        if($content === '!krentenbol') {
+            $message->reply('Een krentenbol is een rond broodje met krenten, soms ook met rozijnen. Het deeg is ten opzichte van gewoon brooddeeg behalve met krenten en eventueel rozijnen verrijkt met ei en boter, soms ook citroenschil, sukade en suiker. Krentenbollen worden soms besmeerd met boter of margarine en al dan niet belegd met kaas, suiker of een andere zoetigheid. Krentenbollen zijn echt een verrukkelijke versnapering voor jouw mondje.');
         }
     });
 });
