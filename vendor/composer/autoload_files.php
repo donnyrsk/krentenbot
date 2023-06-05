@@ -17,6 +17,7 @@ return array(
     '49d7e2e91a66e18467cc8d8b8b02459b' => $vendorDir . '/mollie/polyfill-libsodium/bootstrap.php',
     '3be16222a6efa6dd226a219eaaff823b' => $vendorDir . '/ratchet/pawl/src/functions_include.php',
     '83835a8f9e1906eeec7f4923b03042b8' => $vendorDir . '/react/partial/src/functions.php',
+    '320cde22f66dd4f5d3fd621d3e88b98f' => $vendorDir . '/symfony/polyfill-ctype/bootstrap.php',
     '37a3dc5111fe8f707ab4c132ef1dbc62' => $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
     '864b292aadc96fda0e2642b894a38d16' => $vendorDir . '/team-reflex/discord-php/src/Discord/functions.php',
 );

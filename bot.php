@@ -3,12 +3,24 @@ use Discord\Discord;
 use Discord\WebSockets\Event;
 use Discord\WebSockets\Intents;
 require_once('./vendor/autoload.php');
-require_once('./key.php');
-$key = getKey();
+require_once('./.env');
+require __DIR__ . '/vendor/autoload.php';
 
-$discord = new Discord(['token'=>$key]);
-$discord->on('ready', function(Discord $discord) {
-    echo 'Bot staat aan!';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+try {
+    $discord = new Discord([
+        'token' => $_ENV['DISCORD_BOT_TOKEN'],
+        'intents' => Intents::getDefaultIntents()
+    ]);
+} catch (IntentException $e) {
+    echo $e->getMessage() . PHP_EOL;
+    exit(1);
+}
+
+$discord->on('ready', function($discord) {
+    echo 'Bot staat aan!', PHP_EOL;
     $discord->on('message', function($message, $discord){
         $content = $message->content;
         if(strpos($content, '!') === false) return;
@@ -40,6 +52,8 @@ $discord->on('ready', function(Discord $discord) {
             $randomMop = $moppen[$randomMopArrayNumber];
             $message->reply($randomMop);
         }
+
+        
     });
 });
 $discord->run();
