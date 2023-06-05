@@ -1,12 +1,14 @@
 <?php
-use Discord\Discord;
-use Discord\WebSockets\Event;
-use Discord\WebSockets\Intents;
 require_once('./vendor/autoload.php');
 require_once('./.env');
 require __DIR__ . '/vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+use Discord\Discord;
+use Discord\WebSockets\Event;
+use Discord\WebSockets\Intents;
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 try {
@@ -21,7 +23,10 @@ try {
 
 $discord->on('ready', function($discord) {
     echo 'Bot staat aan!', PHP_EOL;
-    $discord->on('message', function($message, $discord){
+
+
+    //Luistert naar berichten
+    $discord->on('message', function($message, Discord $discord){
         $content = $message->content;
         if(strpos($content, '!') === false) return;
 
@@ -46,14 +51,60 @@ $discord->on('ready', function($discord) {
             "Val je moeder lekker lastig ofzo",
             "Ga buiten spelen alsjeblieft",
         ];
-
         if($content === '!mop') {
             $randomMopArrayNumber = array_rand($moppen);
             $randomMop = $moppen[$randomMopArrayNumber];
             $message->reply($randomMop);
         }
 
-        
+        //Steen papier schaar responder
+        $sps = [
+            "steen",
+            "papier",
+            "schaar"
+        ];
+        if($content === '!sps steen') {
+            $randomSpsArrayNumber = array_rand($sps);
+            $randomSps = $sps[$randomSpsArrayNumber];
+            if($randomSps === 'steen') {
+                $message->reply('Ik kies '.$randomSps.'! Gelijkspel!');
+            }
+            if($randomSps === 'papier') {
+                $message->reply('Ik kies '.$randomSps.'! Ik win!');
+            }
+            if($randomSps === 'schaar') {
+                $message->reply('Ik kies '.$randomSps.'! Jij wint!');
+            }
+        }
+        if($content === '!sps papier') {
+            $randomSpsArrayNumber = array_rand($sps);
+            $randomSps = $sps[$randomSpsArrayNumber];
+            if($randomSps === 'steen') {
+                $message->reply('Ik kies '.$randomSps.'! Jij wint!');
+            }
+            if($randomSps === 'papier') {
+                $message->reply('Ik kies '.$randomSps.'! Gelijkspel!');
+            }
+            if($randomSps === 'schaar') {
+                $message->reply('Ik kies '.$randomSps.'! Ik win!');
+            }
+        }
+        if($content === '!sps schaar') {
+            $randomSpsArrayNumber = array_rand($sps);
+            $randomSps = $sps[$randomSpsArrayNumber];
+            if($randomSps === 'steen') {
+                $message->reply('Ik kies '.$randomSps.'! Ik win!');
+            }
+            if($randomSps === 'papier') {
+                $message->reply('Ik kies '.$randomSps.'! Jij wint!');
+            }
+            if($randomSps === 'schaar') {
+                $message->reply('Ik kies '.$randomSps.'! Gelijkspel!');
+            }
+        }
+        if($content === '!sps') {
+            $message->reply('Kies dan iets, lege vaas');
+        }
     });
 });
 $discord->run();
