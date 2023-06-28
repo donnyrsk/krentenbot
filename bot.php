@@ -133,115 +133,60 @@ $discord->on('ready', function(Discord $discord) {
 
     //----------------------------------------Steen papier schaar slash command----------------------------------------\\
 
-    $discord->on('INTERACTION_CREATE', function (Interaction $interaction) {
-        $command = $interaction->data->name;
+    $command = [
+        'name' => 'rps',
+        'description' => 'Play rock-paper-scissors',
+        'options' => [
+            [
+                'name' => 'choice',
+                'description' => 'Your choice',
+                'type' => 3, // TYPE_STRING
+                'required' => true,
+                'choices' => [
+                    [
+                        'name' => 'Rock',
+                        'value' => 'rock'
+                    ],
+                    [
+                        'name' => 'Paper',
+                        'value' => 'paper'
+                    ],
+                    [
+                        'name' => 'Scissors',
+                        'value' => 'scissors'
+                    ]
+                ]
+            ]
+        ]
+    ];
 
-        if ($command === 'sps') {
-            // Check if options are present
-            if (isset($interaction->data->options)) {
-                $option1 = null;
-                $option2 = null;
-                $option3 = null;
+    $discord->application->commands->create($command);
 
-                // Loop through options and retrieve their values
-                foreach ($interaction->data->options as $option) {
-                    if ($option->name === 'option1') {
-                        $option1 = $option->value;
-                    } elseif ($option->name === 'option2') {
-                        $option2 = $option->value;
-                    } elseif ($option->name === 'option3') {
-                        $option3 = $option->value;
-                    }
-                }
+    $discord->on('INTERACTION_CREATE', function ($interaction) use ($discord) {
+        if ($interaction->type === 1 && $interaction->data->name === 'rps') {
+            $choice = $interaction->data->options[0]->value;
 
-                // Process the options and generate a response
-                $response = "Option 1: $option1\n";
-                $response .= "Option 2: $option2\n";
-                $response .= "Option 3: " . ($option3 ? 'True' : 'False');
+            // Determine the bot's choice
+            $choices = ['rock', 'paper', 'scissors'];
+            $botChoice = $choices[array_rand($choices)];
 
-                $message = new MessageBuilder();
-                $message->setContent($response);
-
-                $interaction->respondWithMessage($message);
+            // Determine the winner
+            $result = '';
+            if ($choice === $botChoice) {
+                $result = 'It\'s a tie!';
+            } elseif (($choice === 'rock' && $botChoice === 'scissors') ||
+                ($choice === 'paper' && $botChoice === 'rock') ||
+                ($choice === 'scissors' && $botChoice === 'paper')
+            ) {
+                $result = 'You win!';
             } else {
-                // No options provided
-                $spsErrorMessage = "Kies dan iets, lege vaas";
+                $result = 'I win!';
+            }
 
-                $message = new MessageBuilder();
-                $message->setContent($spsErrorMessage);
-
-                $interaction->respondWithMessage($message);
-            }
-        }
-    });
-
-    $discord->on('READY', function () use ($discord) {
-        $discord->registerCommand('sps', function (CommandBuilder $builder) {
-            $builder->setDescription('Play a game of rock-paper-scissors with me! Not rigged at all!')
-                ->addOption(
-                    new Option('option1', 'Option 1', 3, true) // 3 represents String type
-                )
-                ->addOption(
-                    new Option('option2', 'Option 2', 3, true) // 3 represents String type
-                )
-                ->addOption(
-                    new Option('option3', 'Option 3', 5, false) // 5 represents Boolean type
-                );
-        });
-    });
-
-    //----------------------------------------! responder rommel----------------------------------------\\
-    $discord->on('message', function($message, Discord $discord){
-        $content = $message->content;
-        if(strpos($content, '!') === false) return;
-
-        //Steen papier schaar responder
-        $sps = [
-            "steen",
-            "papier",
-            "schaar"
-        ];
-        if($content === '!sps steen') {
-            $randomSpsArrayNumber = array_rand($sps);
-            $randomSps = $sps[$randomSpsArrayNumber];
-            if($randomSps === 'steen') {
-                $message->reply('Ik kies '.$randomSps.'! Gelijkspel!');
-            }
-            if($randomSps === 'papier') {
-                $message->reply('Ik kies '.$randomSps.'! Ik win!');
-            }
-            if($randomSps === 'schaar') {
-                $message->reply('Ik kies '.$randomSps.'! Jij wint!');
-            }
-        }
-        if($content === '!sps papier') {
-            $randomSpsArrayNumber = array_rand($sps);
-            $randomSps = $sps[$randomSpsArrayNumber];
-            if($randomSps === 'steen') {
-                $message->reply('Ik kies '.$randomSps.'! Jij wint!');
-            }
-            if($randomSps === 'papier') {
-                $message->reply('Ik kies '.$randomSps.'! Gelijkspel!');
-            }
-            if($randomSps === 'schaar') {
-                $message->reply('Ik kies '.$randomSps.'! Ik win!');
-            }
-        }
-        if($content === '!sps schaar') {
-            $randomSpsArrayNumber = array_rand($sps);
-            $randomSps = $sps[$randomSpsArrayNumber];
-            if($randomSps === 'steen') {
-                $message->reply('Ik kies '.$randomSps.'! Ik win!');
-            }
-            if($randomSps === 'papier') {
-                $message->reply('Ik kies '.$randomSps.'! Jij wint!');
-            }
-            if($randomSps === 'schaar') {
-                $message->reply('Ik kies '.$randomSps.'! Gelijkspel!');
-            }
-        }
-        if($content === '!sps') {
-            $message->reply('Kies dan iets, lege vaas');
+            // Send the result as a response
+            $discord->api->interactions($interaction->id, $interaction->token)->callback('CHANNEL_MESSAGE_WITH_SOURCE', [
+                'content' => $result
+            ]);
         }
     });
 });
