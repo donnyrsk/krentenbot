@@ -96,8 +96,8 @@ $discord->on('ready', function(Discord $discord) {
     //----------------------------------------Steen papier schaar slash command----------------------------------------\\
 
     $command = new Command($discord, [
-        'name' => 'rps',
-        'description' => 'Play rock-paper-scissors',
+        'name' => 'sps',
+        'description' => 'Kom potje steen papier schaar dan mietje',
         'options' => [
             [
                 'name' => 'choice',
@@ -106,19 +106,16 @@ $discord->on('ready', function(Discord $discord) {
                 'required' => true,
                 'choices' => [
                     [
-                        'name' => 'Rock',
-                        'value' => 'rock',
-                        'type' => 3
+                        'name' => 'Steen',
+                        'value' => 'steen',
                     ],
                     [
-                        'name' => 'Paper',
-                        'value' => 'paper',
-                        'type' => 3
+                        'name' => 'Papier',
+                        'value' => 'papier',
                     ],
                     [
-                        'name' => 'Scissors',
-                        'value' => 'scissors',
-                        'type' => 3
+                        'name' => 'Schaar',
+                        'value' => 'schaar',
                     ]
                 ]
             ]
@@ -127,33 +124,41 @@ $discord->on('ready', function(Discord $discord) {
 
     $discord->application->commands->save($command);
 
-    $discord->on('slashCommand', function (CommandBuilder $interaction, Discord $discord) {
-            if ($interaction->name === 'rps') {
-                $choice = $interaction->options['choices']->value;
+    $discord->listenCommand('sps', function (Interaction $interaction) {
+        $choice = $interaction->data->options['choice']->value;
 
-                // Determine the bot's choice
-                $choices = ['rock', 'paper', 'scissors'];
-                $botChoice = $choices[array_rand($choices)];
+        // Determine the bot's choice
+        $choices = ['steen', 'papier', 'schaar'];
+        $botChoice = $choices[mt_rand(0, count($choices) - 1)];
+        if($botChoice == 'steen') {
+            $botEmote = ':rock:';
+        } elseif ($botChoice == 'schaar') {
+            $botEmote = ':scissors:';
+        } elseif($botChoice == 'papier') {
+            $botEmote = ':page_facing_up:';
+        }
+        if($choice == 'steen') {
+            $emote = ':rock:';
+        } elseif ($choice == 'schaar') {
+            $emote = ':scissors:';
+        } elseif($choice == 'papier') {
+            $emote = ':page_facing_up:';
+        }
 
-                // Determine the winner
-                $result = '';
-                if ($choice === $botChoice) {
-                    $result = 'It\'s a tie!';
-                } elseif (($choice === 'rock' && $botChoice === 'scissors') ||
-                    ($choice === 'paper' && $botChoice === 'rock') ||
-                    ($choice === 'scissors' && $botChoice === 'paper')
-                ) {
-                    $result = 'You win!';
-                } else {
-                    $result = 'I win!';
-                }
-
-                // Send the result as a response
-                $interaction->respondWithMessage(MessageBuilder::new()->setContent($result));
-            }
+        // Determine the winner
+        $result = '';
+        if ($choice === $botChoice) {
+            $result = 'Bot kiest '. $botEmote . ' | Jij kiest ' . $emote . "\n\nWAT?! GELIJKSPEL?! *tieft pc in het water*";
+        } elseif (
+            ($choice === 'steen' && $botChoice === 'schaar') ||
+            ($choice === 'papier' && $botChoice === 'rock') ||
+            ($choice === 'schaar' && $botChoice === 'papier')
+        ) {
+            $result = 'Bot kiest '. $botEmote . ' | Jij kiest ' . $emote . "\n\nIk heb " . $botChoice . " gekozen, jij wint godverdomme *slaat bureau in tienen*";
+        } else {
+            $result = 'Bot kiest '. $botEmote . ' | Jij kiest ' . $emote . "\n\nIk heb " . $botChoice . " gekozen, jij verliest TERING NOOB! :middle_finger:";
+        }
+        $interaction->respondWithMessage(MessageBuilder::new()->setContent($result));
     });
-
-
-
 });
 $discord->run();
