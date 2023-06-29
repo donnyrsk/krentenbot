@@ -38,7 +38,7 @@ $discord->on('ready', function(Discord $discord) {
 
 
     $discord->listenCommand('help', function (Interaction $interaction) {
-        $help = "/jemoeder, /mop, /ping, !sps";
+        $help = "/jemoeder, /mop, /ping, /krentenbol, /sps";
         $interaction->respondWithMessage(MessageBuilder::new()->setContent($help));
     });
 
@@ -95,13 +95,14 @@ $discord->on('ready', function(Discord $discord) {
 
     //----------------------------------------Steen papier schaar slash command----------------------------------------\\
 
+
     $command = new Command($discord, [
         'name' => 'sps',
         'description' => 'Kom potje steen papier schaar dan mietje',
         'options' => [
             [
-                'name' => 'choice',
-                'description' => 'Your choice',
+                'name' => 'kies',
+                'description' => 'Steen, papier of schaar',
                 'type' => 3, // TYPE_STRING
                 'required' => true,
                 'choices' => [
@@ -125,7 +126,7 @@ $discord->on('ready', function(Discord $discord) {
     $discord->application->commands->save($command);
 
     $discord->listenCommand('sps', function (Interaction $interaction) {
-        $choice = $interaction->data->options['choice']->value;
+        $choice = $interaction->data->options['kies']->value;
 
         // Determine the bot's choice
         $choices = ['steen', 'papier', 'schaar'];

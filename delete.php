@@ -6,12 +6,6 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Discord\Discord;
 use Discord\Exceptions\IntentException;
-use Discord\Parts\Interactions\Command\Command;
-use Discord\Parts\Interactions\Interaction;
-use Discord\Parts\Interactions\Command\Option;
-use Discord\Builders\CommandBuilder;
-use Discord\Builders\MessageBuilder;
-use Discord\WebSockets\Event;
 use Discord\WebSockets\Intents;
 use Dotenv\Dotenv;
 
@@ -37,6 +31,5 @@ $discord->on('ready', function(Discord $discord) {
             $commands->delete($command);
         }
     });
-
     $discord->run();
 });
